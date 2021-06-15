@@ -2,6 +2,8 @@
   export let title;
   export let share = false;
   export let query = "";
+  export let code = "";
+  export let examples = true;
 
   import FontFaceObserver from "fontfaceobserver";
 
@@ -88,6 +90,7 @@
   };
 
   function getCode() {
+    if (code) return code;
     if (query) {
       const urlParams = new URLSearchParams(window.location.search);
       const code = urlParams.get(query);
@@ -119,8 +122,7 @@
     setTimeout(() => (isActive = false), 4000);
   };
 
-  const copyShareURL = (event) => {
-    event.preventDefault();
+  const copyShareURL = () => {
     const code = editor.getValue();
     const encoded = encodeURIComponent(code);
     const { origin, pathname } = window.location;
@@ -129,8 +131,7 @@
     showMessage();
   };
 
-  const compileAndRun = (event) => {
-    event.preventDefault();
+  const compileAndRun = () => {
     (async () => {
       const lines = [];
       console.log = async (...args) => {
@@ -188,18 +189,22 @@
     <img src="/logo-128x128.png" class="logo" alt="logo" />
     <span class="title">{title}</span>
     <div class="spacer" />
-    <select class="sample" on:change={setSampleCode}>
-      <option selected value="parallelFib">Parallel Fib</option>
-      <option value="parallelFibAlternate"> Parallel Fib (Alternate) </option>
-      <option value="fib">Fib</option>
-      <option value="filter">Filter</option>
-      <option value="reduce">Reduce</option>
-      <option value="express">Express</option>
-    </select>
-    {#if share}
-      <a href="#?" class="btn share" on:click={copyShareURL}> Share </a>
+    {#if examples}
+      <select class="sample" on:change={setSampleCode}>
+        <option selected value="parallelFib">Parallel Fib</option>
+        <option value="parallelFibAlternate"> Parallel Fib (Alternate) </option>
+        <option value="fib">Fib</option>
+        <option value="filter">Filter</option>
+        <option value="reduce">Reduce</option>
+        <option value="express">Express</option>
+      </select>
     {/if}
-    <a href="#?" class="btn" on:click={compileAndRun}> Run </a>
+    {#if share}
+      <button class="btn share" on:click={copyShareURL}>
+        Share
+      </button>
+    {/if}
+    <button class="btn" on:click={compileAndRun}> Run </button>
   </div>
   <div class="sep" />
   <div class="editor {isHorizontal ? 'horizontal' : ''}">
